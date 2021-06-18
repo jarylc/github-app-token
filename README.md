@@ -22,7 +22,7 @@ jobs:
     steps:
       - name: Generate token
         id: generate_token
-        uses: jarylc/github-app-token@v2
+        uses: jarylc/github-app-token@v2.1
         with:
           app_id: ${{ secrets.APP_ID }}
           private_key: ${{ secrets.PRIVATE_KEY }}
