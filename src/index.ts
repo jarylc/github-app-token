@@ -13,10 +13,12 @@ const run = async () => {
       ? Buffer.from(privateKeyInput, "base64").toString("utf8")
       : privateKeyInput;
 
-    const repositoryInput = getInput("repository");
-    const [owner, repo] = repositoryInput
-      ? repositoryInput.split("/")
-      : [context.repo.owner, context.repo.repo];
+    let [owner, repo] = [context.repo.owner, context.repo.repo];
+    const target = getInput("target");
+    if (target) {
+      const split = target.split("/");
+      [owner, repo] = split.length === 2 ? split : [split[0], ""];
+    }
 
     const installationToken = await fetchInstallationToken({
       appId,

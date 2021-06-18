@@ -17,7 +17,7 @@ export const fetchInstallationToken = async ({
   const octokit = getOctokit(authApp.token);
   const {
     data: { id: installationId },
-  } = await octokit.apps.getRepoInstallation({ owner, repo });
+  } = await (repo === "" ?  octokit.apps.getOrgInstallation({ org: owner }) : octokit.apps.getRepoInstallation({ owner, repo }));
   const installation = await app({ installationId, type: "installation" });
   return installation.token;
 };

@@ -1,3 +1,10 @@
+# Fork
+
+This is a fork of [tibdex/github-app-token](https://github.com/tibdex/github-app-token).
+
+Additional capabilities from fork:
+- organization/integration level access token support
+
 # GitHub App Token
 
 This [JavaScript GitHub Action](https://help.github.com/en/actions/building-actions/about-actions#javascript-actions) can be used to impersonate a GitHub App when `secrets.GITHUB_TOKEN`'s limitations are too restrictive and a personal access token is not suitable.
@@ -15,12 +22,13 @@ jobs:
     steps:
       - name: Generate token
         id: generate_token
-        uses: tibdex/github-app-token@v1
+        uses: jarylc/github-app-token@v1
         with:
           app_id: ${{ secrets.APP_ID }}
           private_key: ${{ secrets.PRIVATE_KEY }}
-          # Optional (defaults to the current repository).
-          # repository: owner/repo
+          # Optional (defaults to the current repository). Use either one.
+          # target: owner/repo
+          # target: owner
       - name: Use token
         env:
           TOKEN: ${{ steps.generate_token.outputs.token }}
