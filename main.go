@@ -7,7 +7,6 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"log"
 	"os"
-	"strings"
 	"time"
 )
 
@@ -18,14 +17,14 @@ func main() {
 		errored("format: {base64 private key} {name of org (optional, defaults to current)}", nil)
 	}
 	key := os.Args[1]
-	organization := ""
+	owner := ""
 	if len(os.Args) >= 3 {
-		organization = os.Args[2]
+		owner = os.Args[2]
 	}
-	if organization == "" {
-		organization = strings.Split(os.Getenv("GITHUB_REPOSITORY"), "/")[0]
-		if organization == "" {
-			errored("organization missing", nil)
+	if owner == "" {
+		owner = os.Getenv("GITHUB_REPOSITORY_OWNER")
+		if owner == "" {
+			errored("owner missing", nil)
 		}
 	}
 
@@ -41,7 +40,7 @@ func main() {
 	if err != nil {
 		errored("getting integrations from API", err)
 	}
-	integration, ok := integrations[organization]
+	integration, ok := integrations[owner]
 	if !ok {
 		errored("organization integration not found for app", nil)
 	}
