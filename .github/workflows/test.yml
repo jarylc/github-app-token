@@ -1,20 +1,21 @@
 name: Test
-on:
-  push:
-    branches-ignore:
-      - main
+on: [push]
 
 jobs:
   test:
-    name: Test
     runs-on: ubuntu-latest
+    name: Test
     steps:
-      - uses: actions/checkout@v1
-      - name: Install
-        run: yarn install --frozen-lockfile
-      - name: Build
-        run: yarn run build
-      - name: ESLint
-        run: yarn run eslint
-      - name: Prettier
-        run: yarn run check-prettier
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Generate Token
+        id: generate_token
+        uses: ./
+        with:
+          key: ${{ secrets.TEST_APP_KEY }}
+          owner: ${{ secrets.TEST_OWNER }}
+      - name: Test Masking
+        env:
+          TOKEN: ${{ steps.generate_token.outputs.token }}
+        run: |
+          echo "The generated token is masked: ${TOKEN}"
