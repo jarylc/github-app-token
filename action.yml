@@ -1,22 +1,23 @@
 name: GitHub App Token Generator
-author: Jaryl Chng <git@jarylchng.com> & Thibault Derousseaux <tibdex@gmail.com>
-description: Run a GitHub Action as a GitHub App instead of using secrets.GITHUB_TOKEN or a personal access token.
+author: Jaryl Chng <git@jarylchng.com>
+description: Easily generate a GitHub App integration access token to use for subsequent steps
 inputs:
-  app_id:
-    description: ID of the GitHub App.
+  key:
+    description: Base64 encoded private key of the GitHub App
     required: true
-  private_key:
-    description: Private key of the GitHub App (can be Base64 encoded).
-    required: true
-  target:
-    description: organization or full repository name for which the token will be requested (defaults to the current repository).
+  owner:
+    description: owner/organization for which the token will be requested (defaults to current)
     required: false
+    default: ""
 outputs:
   token:
-    description: An installation token for the GitHub App on the requested repository.
+    description: An installation access token for the GitHub App on the requested organization (masked)
 runs:
-  using: node12
-  main: dist/index.js
+  using: docker
+  image: Dockerfile
+  args:
+    - ${{ inputs.key }}
+    - ${{ inputs.owner }}
 branding:
   icon: unlock
   color: gray-dark
