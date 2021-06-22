@@ -1,0 +1,21 @@
+name: Test v3
+on: [workflow_dispatch]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Test v3
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Generate Token
+        id: generate_token
+        uses: jarylc/github-app-token@v3
+        with:
+          key: ${{ secrets.TEST_APP_KEY }}
+          owner: ${{ secrets.TEST_OWNER }}
+      - name: Test Masking
+        env:
+          TOKEN: ${{ steps.generate_token.outputs.token }}
+        run: |
+          echo "The generated token is masked: ${TOKEN}"
