@@ -3,6 +3,6 @@ WORKDIR /build
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s"
 
-FROM scratch
+FROM alpine
 COPY --from=builder /build/github-app-token /github-app-token
 ENTRYPOINT ["/github-app-token"]
