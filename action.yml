@@ -16,8 +16,8 @@ runs:
   using: docker
   image: Dockerfile
   args:
-    - ${{ inputs.private_key }}
-    - ${{ inputs.organization }}
+    - ${{ inputs.key }}
+    - ${{ inputs.owner }}
 branding:
   icon: unlock
   color: gray-dark
