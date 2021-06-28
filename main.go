@@ -19,23 +19,22 @@ func main() {
 	if app == "" {
 		errored("app name missing", nil)
 	}
-	_, isID := strconv.Atoi(app)
-	if isID != nil {
-		var err error
-		app, err = github.GetApp(app)
-		if err != nil {
-			errored("invalid app\n", err)
-		}
-	}
-
 	key := os.Args[2]
 	if key == "" {
 		errored("base64 private key missing", nil)
 	}
-
 	owner := ""
 	if len(os.Args) >= 4 {
 		owner = os.Args[3]
+	}
+
+	_, isID := strconv.Atoi(app)
+	if isID != nil {
+		var err error
+		app, err = github.GetApp(app)
+		if app == "0" || err != nil {
+			errored("invalid app name/id", nil)
+		}
 	}
 	if owner == "" {
 		owner = os.Getenv("GITHUB_REPOSITORY_OWNER")
@@ -46,15 +45,15 @@ func main() {
 
 	pem, err := base64.StdEncoding.DecodeString(key)
 	if err != nil {
-		errored("decoding base64 key", err)
+		errored("error decoding base64 key", err)
 	}
 	jwt, err := generateJWT(app, pem)
 	if err != nil {
-		errored("generating JWT", err)
+		errored("error generating JWT", err)
 	}
 	integrations, err := github.GetIntegrations(jwt)
 	if err != nil {
-		errored("getting integrations from API", err)
+		errored("error getting integrations from API", err)
 	}
 	integration, ok := integrations[owner]
 	if !ok {
@@ -62,7 +61,7 @@ func main() {
 	}
 	accessToken, err := github.GetAccessToken(jwt, integration)
 	if err != nil {
-		errored("generating access token from API", err)
+		errored("error generating access token from API", err)
 	}
 
 	fmt.Printf("::add-mask::%s\n", accessToken)
