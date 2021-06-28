@@ -12,6 +12,7 @@ jobs:
         id: generate_token
         uses: ./
         with:
+          app: ${{ secrets.TEST_APP_NAME }}
           key: ${{ secrets.TEST_APP_KEY }}
           owner: ${{ secrets.TEST_OWNER }}
       - name: Test Masking
