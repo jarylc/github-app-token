@@ -2,6 +2,8 @@
 Generate a GitHub App integration access token to use for subsequent steps
 
 ## Inputs
+### `app`
+**Required** - App name or ID
 ### `key`
 **Required** - Base64 encoded private key of the GitHub App
 ### `owner`
@@ -21,6 +23,7 @@ jobs:
         id: generate_token
         uses: jarylc/github-app-token@v3
         with:
+          app: ${{ secrets.GH_APP_NAME }}
           key: ${{ secrets.GH_APP_KEY }}
           # Optional (defaults to the current owner)
           # owner: jarylc

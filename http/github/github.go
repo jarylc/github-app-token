@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strconv"
 )
 
 var client = &http.Client{}
@@ -33,7 +34,9 @@ func httpGet(path string, jwt string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", jwt))
+	if jwt != "" {
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", jwt))
+	}
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
@@ -55,7 +58,9 @@ func httpPost(path string, jwt string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", jwt))
+	if jwt != "" {
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", jwt))
+	}
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
@@ -66,6 +71,19 @@ func httpPost(path string, jwt string) ([]byte, error) {
 		return nil, err
 	}
 	return body, nil
+}
+
+func GetApp(name string) (string, error) {
+	raw, err := httpGet(fmt.Sprintf("apps/%s", name), "")
+	if err != nil {
+		return "", err
+	}
+	var app responses.App
+	err = json.Unmarshal(raw, &app)
+	if err != nil {
+		return "", err
+	}
+	return strconv.Itoa(app.Id), nil
 }
 
 func GetIntegrations(jwt string) (map[string]int, error) {

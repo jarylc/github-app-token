@@ -2,6 +2,9 @@ name: GitHub App Token Generator
 author: Jaryl Chng <git@jarylchng.com>
 description: Easily generate a GitHub App integration access token to use for subsequent steps
 inputs:
+  app:
+    description: App name or ID
+    required: true
   key:
     description: Base64 encoded private key of the GitHub App
     required: true
@@ -16,6 +19,7 @@ runs:
   using: docker
   image: Dockerfile
   args:
+    - ${{ inputs.app }}
     - ${{ inputs.key }}
     - ${{ inputs.owner }}
 branding:

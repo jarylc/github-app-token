@@ -7,24 +7,40 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"log"
 	"os"
+	"strconv"
 	"time"
 )
 
-var githubIssuer = "121562"
-
 func main() {
 	if len(os.Args) == 1 {
-		errored("format: {base64 private key} {name of org (optional, defaults to current)}", nil)
+		errored("format: {app name/id} {base64 private key} {org name (optional, defaults to current)}", nil)
 	}
-	key := os.Args[1]
+	app := os.Args[1]
+	if app == "" {
+		errored("app name missing", nil)
+	}
+	_, isID := strconv.Atoi(app)
+	if isID != nil {
+		var err error
+		app, err = github.GetApp(app)
+		if err != nil {
+			errored("invalid app\n", err)
+		}
+	}
+
+	key := os.Args[2]
+	if key == "" {
+		errored("base64 private key missing", nil)
+	}
+
 	owner := ""
-	if len(os.Args) >= 3 {
-		owner = os.Args[2]
+	if len(os.Args) >= 4 {
+		owner = os.Args[3]
 	}
 	if owner == "" {
 		owner = os.Getenv("GITHUB_REPOSITORY_OWNER")
 		if owner == "" {
-			errored("owner missing", nil)
+			errored("org name missing", nil)
 		}
 	}
 
@@ -32,7 +48,7 @@ func main() {
 	if err != nil {
 		errored("decoding base64 key", err)
 	}
-	jwt, err := generateJWT(pem)
+	jwt, err := generateJWT(app, pem)
 	if err != nil {
 		errored("generating JWT", err)
 	}
@@ -53,7 +69,7 @@ func main() {
 	fmt.Printf("::set-output name=token::%s", accessToken)
 }
 
-func generateJWT(pem []byte) (string, error) {
+func generateJWT(app string, pem []byte) (string, error) {
 	key, err := jwt.ParseRSAPrivateKeyFromPEM(pem)
 	if err != nil {
 		return "", err
@@ -63,7 +79,7 @@ func generateJWT(pem []byte) (string, error) {
 	claims := jwt.StandardClaims{
 		ExpiresAt: now + 60,
 		IssuedAt:  now - 60,
-		Issuer:    githubIssuer,
+		Issuer:    app,
 	}
 	jwtGenerator := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
 	jwt, err := jwtGenerator.SignedString(key)
