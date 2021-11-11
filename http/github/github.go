@@ -7,11 +7,12 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"strconv"
 )
 
 var client = &http.Client{}
-var baseURL = "https://api.github.com/"
+var baseURL = os.Getenv("GITHUB_API_URL")
 
 func formUrl(path string) (string, error) {
 	base, err := url.Parse(baseURL)
