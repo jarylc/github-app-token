@@ -21,7 +21,7 @@ jobs:
     steps:
       - name: Generate Token
         id: generate_token
-        uses: jarylc/github-app-token@v3
+        uses: jarylc/github-app-token@v3.0.1
         with:
           app: ${{ secrets.GH_APP_NAME }}
           key: ${{ secrets.GH_APP_KEY }}
